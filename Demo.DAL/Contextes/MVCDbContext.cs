@@ -16,6 +16,7 @@ namespace Demo.DAL.Contextes
         //    optionsBuilder.UseSqlServer("Server = MOHAMMED; Database = MVCApp; Trusted_Conection = True");
         //}
         public DbSet<Department> Departments { get; set; }
+        public DbSet<Employee> Employees { get; set; }
     }
    
 }

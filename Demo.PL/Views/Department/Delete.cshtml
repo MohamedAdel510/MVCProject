@@ -1,0 +1,27 @@
+﻿@model Department
+@{
+    ViewData["Title"] = "Delete";
+}
+
+<h1>Delete @Model.Name Department</h1>
+@* <div>asp-validation-summery="All"</div> *@
+<form asp-action="Delete">
+    <div>
+        <label class="col-form-label" asp-for="Code"></label>
+        <input readonly class="form-control" asp-for="Code" />
+
+    </div>
+    <div>
+        <lable class="col-form-label" asp-for="Name">Name</lable>
+        <input readonly class="form-control" asp-for="Name" />
+
+    </div>
+    <div>
+        <lable class="col-form-label" asp-for="DateOfCreation">Date of cration</lable>
+        <input readonly class="form-control" asp-for="DateOfCreation" />
+    </div>
+    <br />
+    <input type="submit" value="Delete" class="btn btn-danger"/>
+    <a asp-action="Index" class="btn btn-light">Cancel</a>
+</form>
+

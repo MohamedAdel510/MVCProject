@@ -7,8 +7,8 @@ using System.Threading.Tasks;
 
 namespace Dmo.BLL.Interfaces
 {
-    public interface IDepartmentRepository:IGenaricRepository<Department> 
+    public interface IEmployeeRepository:IGenaricRepository<Employee>
     {
-       
+        //IQueryable<Employee> GetByAddress(string Address);
     }
 }
