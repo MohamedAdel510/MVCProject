@@ -14,6 +14,18 @@ namespace Demo.PL.Controllers
         public IActionResult Index()
         {
             var department = _departmentRepository.GetAll();
+            
+            #region ViewData vs ViewBag
+            ////1- ViewData => Dictionary[Key value pair]
+            ////               transfer data from Action to it is view
+            ////               start with .net framework 3.5
+            //ViewData["Message"] = "Hello From View Data";
+            ////2- ViewBag => Dinamic Property [Based on Dinamic Keyword]
+            ////              transfare data from Controller[Action] To It is view
+            ////              start with .ner framework 4.0
+            //ViewBag.Message = "Hello From View Bag";
+            #endregion
+           
             return View(department);
         }
         [HttpGet]
@@ -26,7 +38,11 @@ namespace Demo.PL.Controllers
         {
             if (ModelState.IsValid)
             {
-                _departmentRepository.Add(department);
+                int Result = _departmentRepository.Add(department);
+                if(Result > 0)
+                {
+                    TempData["Message"] = "Added successfully";
+                }
                 return RedirectToAction(nameof(Index));
             }
             return View(department);
@@ -58,7 +74,11 @@ namespace Demo.PL.Controllers
             {
                 try
                 {
-                    _departmentRepository.Update(department);
+                    int Result = _departmentRepository.Update(department);
+                    if (Result > 0)
+                    {
+                        TempData["Message"] = "Updated";
+                    }
                     return RedirectToAction(nameof(Index));
                 }
                 catch (System.Exception ex)
@@ -78,7 +98,11 @@ namespace Demo.PL.Controllers
         {
             try
             {
-                _departmentRepository.Delete(department);
+                int Result = _departmentRepository.Delete(department);
+                if (Result > 0)
+                {
+                    TempData["Message"] = "Deleted";
+                }
                 return RedirectToAction(nameof(Index));
             }
             catch(System.Exception ex)

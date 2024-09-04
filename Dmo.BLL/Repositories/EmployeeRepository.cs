@@ -11,11 +11,14 @@ namespace Dmo.BLL.Repositories
 {
     public class EmployeeRepository : GenaricRepository<Employee>, IEmployeeRepository
     {
-        public EmployeeRepository(MVCDbContext dbContext) : base(dbContext) { }
+        private readonly MVCDbContext _dbContext;
+        public EmployeeRepository(MVCDbContext dbContext) : base(dbContext)
+        {
+            _dbContext = dbContext;
+        }
 
-        //public IQueryable<Employee> GetByAddress(string Address)
-        //{
-        //    throw new NotImplementedException();
-        //}
+        public IQueryable<Employee> GetByAddress(string Address)
+            => _dbContext.Employees.Where(E => E.Addres == Address);
+
     }
 }

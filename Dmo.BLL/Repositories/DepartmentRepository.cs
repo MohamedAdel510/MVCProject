@@ -12,6 +12,9 @@ namespace Dmo.BLL.Repositories
 {
     public class DepartmentRepository : GenaricRepository<Department>, IDepartmentRepository
     {
-        public DepartmentRepository(MVCDbContext dbContext):base(dbContext) { }
+        public DepartmentRepository(MVCDbContext dbContext):base(dbContext) 
+        {
+            
+        }
     }
 }
