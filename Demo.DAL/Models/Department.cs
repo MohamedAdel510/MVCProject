@@ -17,6 +17,6 @@ namespace Demo.DAL.Models
         public string Code { get; set; }
         public DateTime DateOfCreation { get; set; }
         [InverseProperty("Department")]
-        public ICollection<Employee> Employees { get; set; } = new HashSet<Employee>();// Navigational property
+        public virtual ICollection<Employee> Employees { get; set; } = new HashSet<Employee>();// Navigational property
     }
 }

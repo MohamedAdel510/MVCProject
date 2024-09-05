@@ -2,6 +2,7 @@
 using Dmo.BLL.Interfaces;
 using Dmo.BLL.Repositories;
 using Microsoft.AspNetCore.Mvc;
+using System.Linq;
 
 namespace Demo.PL.Controllers
 {
@@ -14,9 +15,13 @@ namespace Demo.PL.Controllers
             _employeeRepository = employeeRepository;
         }
 
-        public IActionResult Index()
+        public IActionResult Index(string SearchString)
         {
             var Employees = _employeeRepository.GetAll();
+            if (!string.IsNullOrEmpty(SearchString))
+            {
+                Employees = Employees.Where(E => E.Name.Contains(SearchString)).ToList();
+            }
             return View(Employees);
         }
         [HttpGet]

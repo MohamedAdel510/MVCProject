@@ -30,6 +30,6 @@ namespace Demo.DAL.Models
         [ForeignKey("Department")]
         public int? DepartmentId { get; set; }
         [InverseProperty("Employees")]
-        public Department Department { get; set; } // Navigational property
+        public virtual Department Department { get; set; } //Navigational property
     }
 }

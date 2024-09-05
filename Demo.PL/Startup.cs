@@ -30,7 +30,7 @@ namespace Demo.PL
             services.AddControllersWithViews();
             services.AddDbContext<MVCDbContext>(options =>
             {
-                options.UseSqlServer(Configuration.GetConnectionString("DefaultConnection"));
+                options.UseLazyLoadingProxies().UseSqlServer(Configuration.GetConnectionString("DefaultConnection"));
             }); // Allow Dependancy Injection
             services.AddScoped<IDepartmentRepository, DepartmentRepository>();
             services.AddScoped<IEmployeeRepository, EmployeeRepository>();
