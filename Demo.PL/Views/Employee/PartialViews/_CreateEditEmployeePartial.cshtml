@@ -1,0 +1,48 @@
+﻿@model Employee
+@{
+    var departments = new SelectList(ViewBag.Department, "Id", "Name");
+}
+<div>
+    <label class="col-form-label" asp-for="Name"></label>
+    <input class="form-control" asp-for="Name" />
+    <span asp-validation-for="Name" class="text-danger"></span>
+</div>
+
+<div>
+    <label class="col-form-label" asp-for="Age"></label>
+    <input class="form-control" asp-for="Age" />
+    <span asp-validation-for="Name" class="text-danger"></span>
+</div>
+
+<div>
+    <label class="col-form-label" asp-for="Addres"></label>
+    <input class="form-control" asp-for="Addres" />
+</div>
+
+<div>
+    <label class="col-form-label" asp-for="Salary"></label>
+    <input class="form-control" asp-for="Salary" />
+</div>
+
+<div>
+    <label class="col-form-label" asp-for="Department"></label>
+    <select class="form-control" asp-items="@departments" asp-for="DepartmentId">
+        <option value="@null">------- Select department -------</option>
+    </select>
+</div>
+<div>
+    <label class="col-form-label" asp-for="Email"></label>
+    <input class="form-control" asp-for="Email" />
+</div>
+<div>
+    <label class="col-form-label" asp-for="PhoneNumber"></label>
+    <input class="form-control" asp-for="PhoneNumber" />
+</div>
+<div>
+    <label class="col-form-label" asp-for="HireDate"></label>
+    <input class="form-control" asp-for="HireDate" />
+</div>
+<div>
+    <label class="col-form-label" asp-for="IsActive"></label>
+    <input class="form-control" asp-for="IsActive" />
+</div>

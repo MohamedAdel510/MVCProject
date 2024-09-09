@@ -6,20 +6,7 @@
 <h1>Create New Department</h1>
 <br />
 <form asp-action="Create">
-    <div>
-        <label class="col-form-label" asp-for="Code"></label>
-        <input class="form-control" asp-for="Code"/>
-        <span asp-validation-for="Code" class="text-danger"></span>
-    </div>
-    <div>
-        <lable class="col-form-label" asp-for="Name">Name</lable>
-        <input class="form-control" asp-for="Name"/>
-        <span asp-validation-for="Name" class="text-danger"></span>
-    </div>
-    <div>
-        <lable class="col-form-label" asp-for="DateOfCreation">Date of cration</lable>
-        <input class="form-control" asp-for="DateOfCreation"/>
-    </div>
+    <Partial name="PartialViews/_CreateEditPartial" />
     <br />
     <input type="submit" value="Submit" class="btn btn-primary"/>
     <a asp-action="Index" class="btn btn-light">Back to list</a>
@@ -27,6 +14,5 @@
 
 @section ValidationScriptSection
 {
-    <script src="~/lib/jquery-validation/dist/additional-methods.min.js"></script>
-    <script src="~/lib/jquery-validation-unobtrusive/jquery.validate.unobtrusive.min.js"></script>
+    <partial name="_ValidationScriptsPartial"></partial>
 }
