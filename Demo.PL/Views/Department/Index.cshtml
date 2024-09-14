@@ -1,11 +1,31 @@
-﻿@model IEnumerable<Department>
+﻿@model IEnumerable<DepartmentView>
 @{
     ViewData["Title"] = "All Departments";
-    // string ViewDataMessage = ViewData["Message"] as string;
-    // // Enforce type Safty => Required casting [strongly tyeped]
-    // string ViewBagMessage = ViewBag.Message;
-    // //Cannot enforce type safty => Not required casting [weakly tyeped]
+    string ViewDataMessage = ViewData["Message"] as string;
+    // Enforce type Safty => Required casting [strongly tyeped]
+    string ViewBagMessage = ViewBag.Message;
+    //Cannot enforce type safty => Not required casting [weakly tyeped]
 }
+
+@* <div class="alert alert-success">
+    @ViewDataMessage
+</div>
+
+<div class="alert alert-success">
+    @ViewBagMessage
+</div>
+ *@
+
+@* <div class="alert alert-success">
+@ViewData["Message"]
+</div> *@
+
+@* <div class="alert alert-success">
+    @ViewBag.Message
+</div> *@
+
+
+
 @if(TempData["Message"] is not null)
 {
     <div class="alert alert-success">

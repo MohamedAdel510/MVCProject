@@ -9,10 +9,10 @@ namespace Dmo.BLL.Interfaces
 {
     public interface IGenaricRepository<T> where T : class
     {
-        IEnumerable<T> GetAll();
-        T GetById(int id);
-        int Add(T Module);
-        int Update(T Module);
-        int Delete(T Module );
+        Task <IEnumerable<T>> GetAllAsync();
+        Task<T> GetByIdAsync(int id);
+        void Add(T Module);
+        void Update(T Module);
+        void Delete(T Module );
     }
 }

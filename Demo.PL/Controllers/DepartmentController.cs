@@ -1,19 +1,28 @@
-﻿using Demo.DAL.Models;
+﻿using AutoMapper;
+using Demo.DAL.Models;
+using Demo.PL.ViewModels;
 using Dmo.BLL.Interfaces;
 using Microsoft.AspNetCore.Mvc;
+using System.Collections;
+using System.Collections.Generic;
+using System.Threading.Tasks;
 
 namespace Demo.PL.Controllers
 {
     public class DepartmentController : Controller
     {
-        private readonly IDepartmentRepository _departmentRepository;
-        public DepartmentController(IDepartmentRepository departmentRepository)
+        private readonly IUnitOfWork _unitOfWork;
+        private readonly IMapper _mapper;
+
+        public DepartmentController(IUnitOfWork unitOfWork, IMapper mapper)
         {
-            _departmentRepository = departmentRepository;
+            _unitOfWork = unitOfWork;
+            _mapper = mapper;
         }
-        public IActionResult Index()
+        public async Task<IActionResult> Index()
         {
-            var department = _departmentRepository.GetAll();
+            var department = await _unitOfWork.DepartmentRepository.GetAllAsync();
+            var MappedDepartments = _mapper.Map<IEnumerable<Department>, IEnumerable<DepartmentView>>(department);
             
             #region ViewData vs ViewBag
             ////1- ViewData => Dictionary[Key value pair]
@@ -25,8 +34,8 @@ namespace Demo.PL.Controllers
             ////              start with .ner framework 4.0
             //ViewBag.Message = "Hello From View Bag";
             #endregion
-           
-            return View(department);
+
+            return View(MappedDepartments);
         }
         [HttpGet]
         public IActionResult Create()
@@ -34,47 +43,52 @@ namespace Demo.PL.Controllers
             return View();
         }
         [HttpPost]
-        public IActionResult Create(Department department)
+        public async Task<IActionResult> Create(DepartmentView departmentView)
         {
             if (ModelState.IsValid)
             {
-                int Result = _departmentRepository.Add(department);
-                if(Result > 0)
+                var MappedDepartment = _mapper.Map<DepartmentView, Department>(departmentView);
+                _unitOfWork.DepartmentRepository.Add(MappedDepartment);
+                int Result = await _unitOfWork.CompleteAsync();
+                if (Result > 0)
                 {
                     TempData["Message"] = "Added successfully";
                 }
                 return RedirectToAction(nameof(Index));
             }
-            return View(department);
+            return View(departmentView);
         }
-        public IActionResult Details(int? id, string ViewName = "Details")
+        public async Task<IActionResult> Details(int? id, string ViewName = "Details")
         {
             if (id is null)
                 return BadRequest();
-            var department = _departmentRepository.GetById(id.Value);
+            var department = await _unitOfWork.DepartmentRepository.GetByIdAsync(id.Value);
             if (department is null)
                 return NotFound();
-            return View(ViewName, department);
+            var MappedDepartment = _mapper.Map<Department, DepartmentView>(department);
+            return View(ViewName, MappedDepartment);
         }
         [HttpGet]
-        public IActionResult Edit(int? id)
+        public async Task<IActionResult> Edit(int? id)
         {
             //if (id is null)
             //    return BadRequest();
-            //var department = _departmentRepository.GetById(id.Value);
+            //var department = _unitOfWork.DepartmentRepository.GetById(id.Value);
             //if(department is null)
             //    return NotFound();
             //return View(department);
-            return Details(id, "Edit");
+            return await Details(id, "Edit");
         }
         [HttpPost]
-        public IActionResult Edit(Department department, [FromRoute] int id)
+        public async Task<IActionResult> Edit(DepartmentView departmentView, [FromRoute] int id)
         {
             if (ModelState.IsValid)
             {
                 try
                 {
-                    int Result = _departmentRepository.Update(department);
+                    var MappedDepartment = _mapper.Map<DepartmentView, Department>(departmentView);
+                    _unitOfWork.DepartmentRepository.Update(MappedDepartment);
+                    int Result = await _unitOfWork.CompleteAsync();
                     if (Result > 0)
                     {
                         TempData["Message"] = "Updated";
@@ -86,19 +100,21 @@ namespace Demo.PL.Controllers
                     ModelState.AddModelError(string.Empty, ex.Message);
                 }
             }
-            return View(department);
+            return View(departmentView);
         }
         [HttpGet]
-        public IActionResult Delete(int? id)
+        public async Task<IActionResult> Delete(int? id)
         {
-            return Details(id, "Delete");
+            return await Details(id, "Delete");
         }
         [HttpPost]
-        public IActionResult Delete(Department department, [FromRoute] int id)
+        public async Task<IActionResult> Delete(DepartmentView departmentView, [FromRoute] int id)
         {
             try
             {
-                int Result = _departmentRepository.Delete(department);
+                var MappedDepartment = _mapper.Map<DepartmentView, Department>(departmentView);
+                _unitOfWork.DepartmentRepository.Delete(MappedDepartment);
+                int Result = await _unitOfWork.CompleteAsync();
                 if (Result > 0)
                 {
                     TempData["Message"] = "Deleted";
@@ -108,7 +124,7 @@ namespace Demo.PL.Controllers
             catch(System.Exception ex)
             {
                 ModelState.AddModelError(string.Empty, ex.Message);
-                return View(department);
+                return View(departmentView);
             }
         }
     }

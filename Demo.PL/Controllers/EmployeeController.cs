@@ -1,71 +1,106 @@
-﻿using Demo.DAL.Models;
+﻿using AutoMapper;
+using Demo.DAL.Models;
+using Demo.PL.ViewModels;
 using Dmo.BLL.Interfaces;
 using Dmo.BLL.Repositories;
 using Microsoft.AspNetCore.Mvc;
+using Microsoft.AspNetCore.Mvc.Infrastructure;
+using System.Collections;
+using System.Collections.Generic;
 using System.Linq;
+using System.Threading.Tasks;
 
 namespace Demo.PL.Controllers
 {
     public class EmployeeController : Controller
     {
-        private readonly IEmployeeRepository _employeeRepository;
-		private readonly IDepartmentRepository _departmentRepository;
+        private readonly IUnitOfWork _unitOfWork;
+        private readonly IMapper _mapper;
 
-		public EmployeeController(IEmployeeRepository employeeRepository, IDepartmentRepository departmentRepository)
+        public EmployeeController(IUnitOfWork unitOfWork, IMapper mapper)
         {
-            _employeeRepository = employeeRepository;
-			_departmentRepository = departmentRepository;
-		}
+           
+            _unitOfWork = unitOfWork;
+            _mapper = mapper;
+        }
 
-        public IActionResult Index(string SearchString)
+        public async Task<IActionResult> Index(string SearchValue)
         {
-            var Employees = _employeeRepository.GetAll();
-            if (!(string.IsNullOrEmpty(SearchString)))
+            //IEnumerable<Employee> employees;
+            
+            //if (string.IsNullOrEmpty(SearchValue))
+            //    employees = _unitOfWork.EmployeeRepository.GetAll();
+            //else
+            //    employees = _unitOfWork.EmployeeRepository.GetByName(SearchValue);
+            var employees = await _unitOfWork.EmployeeRepository.GetAllAsync();
+            if (! string.IsNullOrEmpty(SearchValue))
             {
-                Employees = Employees.Where(E => E.Name.Contains(SearchString)).ToList();
+                employees = _unitOfWork.EmployeeRepository.GetByName(SearchValue);
             }
-            return View(Employees);
+            var MappedEmployee = _mapper.Map<IEnumerable<Employee>, IEnumerable<EmployeeView>>(employees);
+            return View(MappedEmployee);
         }
         [HttpGet]
-        public IActionResult Create()
+        public async Task<IActionResult> Create()
         {
-            ViewBag.Department = _departmentRepository.GetAll();
+            ViewBag.Department = await _unitOfWork.DepartmentRepository.GetAllAsync();
             return View();
         }
         [HttpPost]
-        public IActionResult Create(Employee employee)
+        public async Task<IActionResult> Create(EmployeeView employeeView)
         {
             if (ModelState.IsValid)
             {
-                int Result = _employeeRepository.Add(employee);
+                #region Manual Mapping
+                //var MappedEmployee = new Employee()
+                //{
+                //    Name = employeeView.Name,
+                //    Age = employeeView.Age,
+                //    Addres = employeeView.Addres,
+                //    IsActive = employeeView.IsActive,
+                //    HireDate = employeeView.HireDate,
+                //    DepartmentId = employeeView.DepartmentId,
+                //    Email = employeeView.Email,
+                //    PhoneNumber = employeeView.PhoneNumber,
+                //    Salary = employeeView.Salary,
+                //};
+                #endregion
+
+                var MappedEmployee = _mapper.Map<EmployeeView, Employee>(employeeView);
+
+                 _unitOfWork.EmployeeRepository.Add(MappedEmployee);
+                int Result = await _unitOfWork.CompleteAsync();
                 if (Result > 0)
                     TempData["Message"] = "Add successfully";
                 return RedirectToAction(nameof(Index));
             }
-            return View(employee);
+            return View(employeeView);
         }
-        public IActionResult Details(int? id, string ViewName = "Details")
+        public async Task<IActionResult> Details(int? id, string ViewName = "Details")
         {
             if (id is null)
                 return BadRequest();
-            var employee = _employeeRepository.GetById(id.Value);
+            var employee = await _unitOfWork.EmployeeRepository.GetByIdAsync(id.Value);
             if(employee is null)
                 return NotFound();
-            return View(ViewName, employee);
+            var MappedEmployee = _mapper.Map<Employee, EmployeeView>(employee);
+            return View(ViewName, MappedEmployee);
         }
         [HttpGet]
-        public IActionResult Edit(int? id)
+        public async Task<IActionResult> Edit(int? id)
         {
-           return Details(id, "Edit");
+           return await Details(id, "Edit");
         }
         [HttpPost]
-        public IActionResult Edit(Employee employee, [FromRoute] int id)
+        public async Task<IActionResult> Edit(EmployeeView employeeView, [FromRoute] int id)
         {
             if (ModelState.IsValid)
             {
                 try
                 {
-                    int Result = _employeeRepository.Update(employee);
+                    var MappedEmployee = _mapper.Map<EmployeeView, Employee>(employeeView);
+                    _unitOfWork.EmployeeRepository.Update(MappedEmployee);
+                    int Result = await _unitOfWork.CompleteAsync();
                     if (Result > 0)
                         TempData["Message"] = "Updated";
                     return RedirectToAction(nameof(Index));
@@ -75,19 +110,21 @@ namespace Demo.PL.Controllers
                     ModelState.AddModelError(string.Empty, ex.Message);
                 }
             }
-            return View(employee);
+            return View(employeeView);
         }
         [HttpGet]
-        public IActionResult Delete(int? id)
+        public async Task<IActionResult> Delete(int? id)
         {
-            return Details(id, "Delete");
+            return await Details(id, "Delete");
         }
         [HttpPost]
-        public IActionResult Delete(Employee employee, [FromRoute] int id)
+        public async Task<IActionResult> Delete(EmployeeView employeeView, [FromRoute] int id)
         {
             try
             {
-                int Result = _employeeRepository.Delete(employee);
+                var MappedEmployee = _mapper.Map<EmployeeView, Employee>(employeeView);
+                _unitOfWork.EmployeeRepository.Delete(MappedEmployee);
+                int Result = await _unitOfWork.CompleteAsync();
                 if (Result > 0)
                     TempData["Message"] = "Deleted";
                 return RedirectToAction(nameof(Index));
@@ -95,7 +132,7 @@ namespace Demo.PL.Controllers
             catch (System.Exception ex)
             {
                 ModelState.AddModelError(string.Empty, ex.Message);
-                return View(employee);
+                return View(employeeView);
             }
         }
     }

@@ -18,35 +18,33 @@ namespace Dmo.BLL.Repositories
             _dbContext = dbContext;
         }
 
-        public int Add(T Module)
+        public async void Add(T Module)
         {
-            _dbContext.Add(Module);
-            return _dbContext.SaveChanges();
+            await _dbContext.AddAsync(Module);
         }
 
-        public int Delete(T Module)
+        public void Delete(T Module)
         {
             _dbContext.Remove(Module);
-            return _dbContext.SaveChanges();
         }
 
-        public IEnumerable<T> GetAll()
+        public async Task<IEnumerable<T>> GetAllAsync()
         {
             if(typeof(T) == typeof(Employee))
             {
-                return (IEnumerable<T>) _dbContext.Employees.Include(E => E.Department).ToList();
+                return (IEnumerable<T>) await _dbContext.Employees.Include(E => E.Department).ToListAsync();
             }
-            return _dbContext.Set<T>().ToList();
+            return  await _dbContext.Set<T>().ToListAsync();
         }
             
 
-        public T GetById(int id) =>
-            _dbContext.Set<T>().Find(id);
-
-        public int Update(T Module)
+        public async Task<T> GetByIdAsync(int id)
+            => await _dbContext.Set<T>().FindAsync(id);
+        
+         
+        public void Update(T Module)
         {
             _dbContext.Update(Module);
-            return _dbContext.SaveChanges();
         }
     }
 }

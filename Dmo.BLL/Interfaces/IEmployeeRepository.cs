@@ -10,5 +10,6 @@ namespace Dmo.BLL.Interfaces
     public interface IEmployeeRepository:IGenaricRepository<Employee>
     {
         IQueryable<Employee> GetByAddress(string Address);
+        IQueryable<Employee> GetByName(string SearchValue);
     }
 }
